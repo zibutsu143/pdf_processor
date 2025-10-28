@@ -13,7 +13,6 @@ def extract_pdf_data(pdf_path):
     cert_pattern = re.compile(r"Certificate Number :\s*([\w-]+)", re.IGNORECASE)
     
     # REGEX GUESS: Assumes "Bid No" (case-insensitive) followed by a space or colon
-    # You may need to change "Bid No" to match your PDF exactly.
     bid_pattern = re.compile(r"Bid No[\s:]*([\w-]+)", re.IGNORECASE)
     
     cert_num = "NOT FOUND"
