@@ -33,8 +33,8 @@ jobs:
       # 6. Build the .exe with PyInstaller
       - name: Build with PyInstaller
         run: |
-          # **IMPORTANT: Change 'your_script_name' to your script's base filename**
-          $scriptName = "your_script_name"
+          
+          $scriptName = "process_pdfs"
           
           # Run PyInstaller
           pyinstaller --onefile "$($scriptName).py"
