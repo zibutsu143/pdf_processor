@@ -32,7 +32,7 @@ The script is designed to run in its current directory, making it easy to use: j
 ### **Installation**
 
 1. Clone this repository:  
-   git clone \[https://github.com/YourUsername/YourRepo.git\](https://github.com/YourUsername/YourRepo.git)  
+   git clone \[https://github.com/zibutsu143/pdf_processor.git\](https://github.com/zibutsu143/pdf_processor.git)  
    cd YourRepo
 
 2. (Recommended) Create a virtual environment:  
