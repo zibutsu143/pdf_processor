@@ -12,9 +12,8 @@ def extract_pdf_data(pdf_path):
     # and captures the alphanumeric string (and hyphens) that follows.
     cert_pattern = re.compile(r"Certificate Number :\s*([\w-]+)", re.IGNORECASE)
     
-    # <<< CHANGED
-    # REGEX GUESS: Assumes "Bid Number" followed by a space or colon
-    # You may need to change "Bid Number" to match your PDF exactly.
+    # REGEX GUESS: Assumes "Bid No" (case-insensitive) followed by a space or colon
+    # You may need to change "Bid No" to match your PDF exactly.
     bid_pattern = re.compile(r"Bid No[\s:]*([\w-]+)", re.IGNORECASE)
     
     cert_num = "NOT FOUND"
@@ -33,7 +32,7 @@ def extract_pdf_data(pdf_path):
                         if cert_match:
                             cert_num = cert_match.group(1).strip()
                     
-                    # <<< CHANGED: Search for bid number if not already found
+                    # Search for bid number if not already found
                     if bid_num == "NOT FOUND":
                         bid_match = bid_pattern.search(text)
                         if bid_match:
@@ -45,9 +44,9 @@ def extract_pdf_data(pdf_path):
                         
     except Exception as e:
         print(f"Error reading {pdf_path}: {e}")
-        return ("ERROR READING PDF", "ERROR READING PDF") # <<< CHANGED
+        return ("ERROR READING PDF", "ERROR READING PDF")
         
-    return (cert_num, bid_num) # <<< CHANGED
+    return (cert_num, bid_num)
 
 def main():
     """
@@ -58,36 +57,42 @@ def main():
     all_data_rows = []
     
     # Headers for the CSV file
-    headers = ["No.", "BID Number in Filename", "Cert", "Name", "Certificate Number", "Bid number"] # <<< CHANGED
+    headers = ["No.", "BID Number in Filename", "Cert", "Name", "Certificate Number", "Bid number"]
     
     file_counter = 1
     
     # Loop through all files in the current directory
-    for file_name in os.listdir(folder_path):
-        if file_name.lower().endswith('.pdf'):
+    for file_name_raw in os.listdir(folder_path):
+        # file_name = file_name_raw.strip() # Trim leading/trailing whitespace
+        
+        # Check the trimmed version of the file, but use the raw name for the path
+        if file_name_raw.strip().lower().endswith('.pdf'):
             
-            # 1. Remove .pdf extension
-            base_name = file_name[:-4]
+            # 1. Remove .pdf extension from the *trimmed* name
+            base_name = file_name_raw.strip()[:-4]
             
             # 2. Split file name by space
             parts = base_name.split(" ")
             
             # 3. Get the full path for the PDF reader
-            full_pdf_path = os.path.join(folder_path, file_name)
+            #    Use the original (un-stripped) name as the file system needs it
+            full_pdf_path = os.path.join(folder_path, file_name_raw)
             
             # 4. Extract both numbers from the PDF content
-            # <<< CHANGED
             (certificate_num, bid_num) = extract_pdf_data(full_pdf_path)
             
             # 5. Prepare the data row
-            # <<< CHANGED
+            # If there are more than 2 parts, join all parts from index 2 onwards
+            # with a space to form the "Name".
+            name_part = " ".join(parts[2:]) if len(parts) > 2 else ''
+            
             row = [
                 file_counter,
                 parts[0] if len(parts) > 0 else '',  # Part 1
                 parts[1] if len(parts) > 1 else '',  # Part 2
-                parts[2] if len(parts) > 2 else '',  # Part 3
+                name_part,                           # Part 3 (and all subsequent parts)
                 certificate_num,
-                bid_num  # Added the new bid number
+                bid_num
             ]
             
             all_data_rows.append(row)
@@ -113,3 +118,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
