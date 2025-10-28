@@ -21,17 +21,6 @@ The script is designed to run in its current directory, making it easy to use: j
   * Gracefully handles PDFs it can't read and logs "ERROR READING PDF" in the CSV.  
   * Warns you if the results.csv file is open in Excel (PermissionError) so you can close it and try again.
 
-## **How to Use (For End-Users)**
-
-This is the easiest way to use the tool. You don't need Python installed for this.
-
-1. Go to the [**Releases**](https://www.google.com/search?q=https://github.com/YourUsername/YourRepo/releases) page of this repository.  
-2. Download the latest process\_pdfs.exe file.  
-3. **Copy** the process\_pdfs.exe file into the folder that contains all the PDF files you want to process.  
-4. **Double-click process\_pdfs.exe** from inside that folder.  
-5. A console window will appear, and after a moment, it will show a "Success\!" message.  
-6. Look for a new file named results.csv in that same folder. This file contains all your extracted data.
-
 ## **For Developers**
 
 ### **Requirements**
