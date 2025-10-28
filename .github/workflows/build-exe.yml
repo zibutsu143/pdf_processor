@@ -1,0 +1,60 @@
+name: Build and Release Windows EXE
+
+# 1. TRIGGER: Run on push to the 'main' branch
+on:
+  push:
+    branches: [ "main" ]
+
+# 2. PERMISSIONS: Grant permission to create releases
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      # 3. Check out the code
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # 4. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 5. Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 6. Build the .exe with PyInstaller
+      - name: Build with PyInstaller
+        run: |
+          # **IMPORTANT: Change 'your_script_name' to your script's base filename**
+          $scriptName = "your_script_name"
+          
+          # Run PyInstaller
+          pyinstaller --onefile "$($scriptName).py"
+          
+          # Rename the .exe for a cleaner release (e.g., "my-app.exe")
+          $exeName = "$($scriptName).exe"
+          Rename-Item -Path "dist\$($scriptName).exe" -NewName $exeName
+          
+          # Save the .exe name for the upload step
+          echo "EXE_NAME=$exeName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
+
+      # 7. Create a GitHub Release and upload the .exe
+      - name: Create Release and Upload EXE
+        uses: softprops/action-gh-release@v2
+        with:
+          # This creates a tag for the release, e.g., "v1", "v2"
+          # It uses the GitHub run number to ensure it's unique
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          
+          # This adds the .exe file from the 'dist' folder to the release
+          files: dist/${{ env.EXE_NAME }}
